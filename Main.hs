@@ -8,11 +8,60 @@ import           Data.Graph
 import           Data.List.Split
 import           Debug.Trace
 
+removeA :: (Ord a) => a -> [a] -> [a]
+removeA _ [] = []
+removeA x y
+  | x == head y = removeA x $ tail y
+  | otherwise = (head y):(removeA x (tail y))
+
+isin :: (Ord a) => a -> [a] -> Bool
+isin _ [] = False
+isin x y
+  | head y == x = True
+  | otherwise = isin x (tail y)
+
+elemisin :: (Ord a) => [a] -> [a] -> Bool
+elemisin _ [] = False
+elemisin [] _ = False
+elemisin x y =
+  if elem (head x) y
+    then
+      True
+  else
+    elemisin (tail x) y
+
+--diamond :: Vertex -> Graph -> [Vertex] -> Bool
+--diamond vertice grafo verdades =
+--  let execucao = reachable' grafo vertice
+--  in
+--    if elemisin execucao verdades
+--      then
+--        True
+--    else
+--      False
+
+diamond :: Vertex -> Graph -> [Vertex]
+diamond vertice grafo = reachable' grafo vertice
+
+
+
 (?) :: (Ord a) => a -> [a] -> Bool
 (?) _ [] = False
 (?) x y
   | x == head y = True
   | otherwise = (?) x (tail y)
+
+
+reachable' :: Graph -> Vertex -> [Vertex]
+reachable' grafo vertice =
+  let vizinhos = reachable grafo vertice
+      vizinhos' = removeA vertice vizinhos
+      arestas = edges grafo
+  in if isin (vertice, vertice) arestas
+    then
+      vizinhos
+    else
+      vizinhos'
 
 vertices' :: Graph -> (Vertex, Vertex)
 vertices' grafo = (minimum $ vertices grafo, maximum $ vertices grafo)
