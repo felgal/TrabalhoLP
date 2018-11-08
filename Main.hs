@@ -273,8 +273,8 @@ verificaPDLcomEntrada grafo pdl posVals =
     in if posDiv==0 || posDiv == final
       then
         if inicio=='!'
-          then not(fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals)
-          else fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
+          then not(fazPrograma (dividePrograma (take 1(drop 1 pdl))) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals)
+          else fazPrograma (dividePrograma (take 1(drop 1 pdl))) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
       else let
         parte1 = take (posDiv-2) (drop 1 pdl)
         parte2 = drop (posDiv+2) (take 1 pdl)
@@ -356,7 +356,7 @@ main = do
   novoPdl <- return $ substituiPDL entPdl (length tuplasVars) (length tuplasVars)
   print $ novoPdl
 
-  print $ take (15-2) (drop 1 novoPdl)
+  print $ take (14-2) (drop 1 novoPdl)
 
 
   print $ vertices graph
