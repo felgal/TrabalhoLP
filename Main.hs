@@ -150,8 +150,8 @@ verificaColchetes grafo vizinhos aceitos =
     then (True && (verificaColchetes grafo (tail vizinhos) aceitos))
     else False
 
-fazPrograma :: [String] ->Graph -> Int ->[Int] ->[Int] ->[Int] -> Bool
-fazPrograma comandos grafo quantDescida estados arestas estadosAceitos=
+fazPrograma :: [String] ->Graph -> Int ->[Int] ->[Int] ->[Int] ->[[Int]] -> Bool
+fazPrograma comandos grafo quantDescida estados arestas estadosAceitos todosEstados=
   let
     estadoAtual = let
       in if (length estados)>0
@@ -169,13 +169,15 @@ fazPrograma comandos grafo quantDescida estados arestas estadosAceitos=
     then True
     else if estadoAtual==(-1) || (quantDescida==0)
       then False
-      else if (isSubsequenceOf "<" comando)
-        then (((verificaEstado estadoAtual estadosAceitos) && (verificaEstado estadoAtual arestas) && (fazPrograma (tail comandos) grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos))  || (fazPrograma comandos grafo (quantDescida-1) (tail estados) arestas estadosAceitos))
-        else if (isSubsequenceOf "[" comando)
-          then (verificaColchetes grafo (reachable' grafo estadoAtual) estadosAceitos) && (fazPrograma (tail comandos) grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos)
-          else if (isSubsequenceOf "*" comando)
-            then (fazPrograma comandos grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos) || (fazPrograma (tail comandos) grafo (quantDescida) estados arestas estadosAceitos)
-            else False
+      else if (isSubsequenceOf "?" comando)
+        then (verificaEstado estadoAtual (retornaPosVal todosEstados (achaVar (head(tail comandos)))))
+        else if (isSubsequenceOf "<" comando)
+          then (((verificaEstado estadoAtual estadosAceitos) && (verificaEstado estadoAtual arestas) && (fazPrograma (tail comandos) grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos  todosEstados))  || (fazPrograma comandos grafo (quantDescida-1) (tail estados) arestas estadosAceitos todosEstados))
+          else if (isSubsequenceOf "[" comando)
+            then (verificaColchetes grafo (reachable' grafo estadoAtual) estadosAceitos) && (fazPrograma (tail comandos) grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos todosEstados)
+            else if (isSubsequenceOf "*" comando)
+              then (fazPrograma comandos grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos todosEstados) || (fazPrograma (tail comandos) grafo (quantDescida) estados arestas estadosAceitos todosEstados)
+              else False
 
 dividePrograma :: String -> [String]
 dividePrograma pdl=
@@ -184,6 +186,12 @@ dividePrograma pdl=
       in if (length pdl)>0
         then
           (head pdl)
+        else
+          '/'
+    seg = let
+      in if (length pdl)>1
+        then
+          head (tail pdl)
         else
           '/'
     terc = let
@@ -204,12 +212,14 @@ dividePrograma pdl=
       then
         (dividePrograma (init( init( init (init pdl))))) ++ ["?"]
       else if terc=='*'
-        then ["*",[prim]] ++ (dividePrograma (tail( tail( tail( tail( tail pdl))))))
-        else if prim=='['
-          then ["["] ++ (dividePrograma (tail( tail (tail ( tail pdl)))))
-          else if prim=='<'
-            then ["<"] ++ (dividePrograma (tail( tail (tail ( tail pdl)))))
-            else ["<"] ++ (dividePrograma (tail (tail (tail ( tail pdl)))))
+        then ["*",[prim],[seg]] ++ (dividePrograma (tail( tail( tail( tail( tail pdl))))))
+        else if terc=='?'
+          then ["?",[seg],[prim]] ++ (dividePrograma (tail( tail( tail( tail( tail pdl))))))
+          else if prim=='['
+            then ["["] ++ (dividePrograma (tail( tail (tail ( tail pdl)))))
+            else if prim=='<'
+              then ["<"] ++ (dividePrograma (tail( tail (tail ( tail pdl)))))
+              else ["<"] ++ (dividePrograma (tail (tail (tail ( tail pdl)))))
 
 achaVar :: String -> Int
 achaVar pdl =
@@ -257,7 +267,7 @@ verificaPDLcomEntrada grafo pdl posVals =
     final = length pdl
     in if posDiv==0 || posDiv == final
       then
-        fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl))
+        fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
       else let
         parte1 = take (posDiv-2) (drop 1 pdl)
         parte2 = drop (posDiv+2) (take 1 pdl)
@@ -340,12 +350,13 @@ main = do
   print $ (retornaPosVal varsSemi (achaVar (drop 5(novoPdl))))
   print $ (retornaPosVal varsSemi (achaVar novoPdl))
   --Entra com o pdl no formato ((q)&(p))-(p)
-  print $ fazPrograma ["<"] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl))
-  print $ fazPrograma ["<"] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl)))
-  print $ fazPrograma ["["] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl))
-  print $ fazPrograma ["["] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl)))
+  print $ fazPrograma ["<"] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl)) varsSemi
+  print $ fazPrograma ["<"] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
+  print $ fazPrograma ["["] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl)) varsSemi
+  print $ fazPrograma ["["] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
   print $ (reachable' graph 0)
   print $ possui 1 (retornaPosVal varsSemi (achaVar novoPdl))
   print $ (verificaColchetes graph (reachable' graph 0) (retornaPosVal varsSemi (achaVar novoPdl)))
-  print $ fazPrograma ["*","<"] graph (length (vertices graph)) [1] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl)))
+  print $ fazPrograma ["?","0"] graph (length (vertices graph)) [2] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (novoPdl))) varsSemi
+  print $ fazPrograma ["*","<"] graph (length (vertices graph)) [1] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
   print $ verificaPDLcomEntrada graph entPdl varsSemi
