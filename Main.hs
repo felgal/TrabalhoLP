@@ -181,6 +181,13 @@ fazPrograma comandos grafo quantDescida estados arestas estadosAceitos todosEsta
                 then (fazPrograma comandos grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos todosEstados) || (fazPrograma (tail comandos) grafo (quantDescida) estados arestas estadosAceitos todosEstados)
                 else False
 
+lixo :: [String] ->Graph -> Int ->[Int] ->[Int] ->[Int] ->[[Int]] -> Bool
+lixo _ _ _ [] _ _ _ = True
+lixo pdl grafo quantDescida estados arestas estadosAceitos todosEstados=
+    let
+        estAtual = head(estados)
+    in (fazPrograma pdl grafo quantDescida [estAtual] arestas estadosAceitos todosEstados) && (lixo pdl grafo quantDescida (tail estados) arestas estadosAceitos todosEstados)
+
 dividePrograma :: String -> [String]
 dividePrograma pdl=
   let
@@ -267,16 +274,16 @@ verificaPDLcomEntrada :: Graph -> String ->[[Int]] -> Bool
 verificaPDLcomEntrada grafo pdl posVals =
   let
     posDiv = achaDivisao pdl 0
-    conector = pdl !! posDiv
     inicio = head(pdl)
     final = (length pdl)-1
     in if posDiv==0
-      then fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
+      then lixo (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
       else if posDiv == final
         then if inicio=='!'
-          then not(fazPrograma (dividePrograma (take 1(drop 1 pdl))) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals)
-          else fazPrograma (dividePrograma (take 1(drop 1 pdl))) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
+          then not(lixo (dividePrograma (take 1(drop 1 pdl))) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals)
+          else lixo (dividePrograma (take 1(drop 1 pdl))) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
         else let
+        conector = pdl !! posDiv
         parte1 = take (posDiv-2) (drop 1 pdl)
         parte2 = drop (posDiv+2) (take 1 pdl)
         in if inicio=='!'
@@ -395,4 +402,4 @@ main = do
   print $ fazPrograma ["?","0"] graph (length (vertices graph)) [2] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (novoPdl))) varsSemi
   print $ fazPrograma ["*","<"] graph (length (vertices graph)) [1] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
   print $ verificaPDLcomEntrada graph entPdl varsSemi
-  print $ encontraErro graph entPdl varsSemi
+  --print $ encontraErro graph entPdl varsSemi
