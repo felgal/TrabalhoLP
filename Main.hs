@@ -169,15 +169,17 @@ fazPrograma comandos grafo quantDescida estados arestas estadosAceitos todosEsta
     then True
     else if estadoAtual==(-1) || (quantDescida==0)
       then False
-      else if (isSubsequenceOf "?" comando)
-        then (verificaEstado estadoAtual (retornaPosVal todosEstados (achaVar (head(tail comandos)))))
-        else if (isSubsequenceOf "<" comando)
-          then (((verificaEstado estadoAtual estadosAceitos) && (verificaEstado estadoAtual arestas) && (fazPrograma (tail comandos) grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos  todosEstados))  || (fazPrograma comandos grafo (quantDescida-1) (tail estados) arestas estadosAceitos todosEstados))
-          else if (isSubsequenceOf "[" comando)
-            then (verificaColchetes grafo (reachable' grafo estadoAtual) estadosAceitos) && (fazPrograma (tail comandos) grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos todosEstados)
-            else if (isSubsequenceOf "*" comando)
-              then (fazPrograma comandos grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos todosEstados) || (fazPrograma (tail comandos) grafo (quantDescida) estados arestas estadosAceitos todosEstados)
-              else False
+      else if (isSubsequenceOf "!" comando)
+        then not ( (fazPrograma (tail comandos) grafo quantDescida estados arestas estadosAceitos  todosEstados))
+        else if (isSubsequenceOf "?" comando)
+          then (verificaEstado estadoAtual (retornaPosVal todosEstados (achaVar (head(tail comandos)))))
+          else if (isSubsequenceOf "<" comando)
+            then (((verificaEstado estadoAtual estadosAceitos) && (verificaEstado estadoAtual arestas) && (fazPrograma (tail comandos) grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos  todosEstados))  || (fazPrograma comandos grafo (quantDescida-1) (tail estados) arestas estadosAceitos todosEstados))
+            else if (isSubsequenceOf "[" comando)
+              then (verificaColchetes grafo (reachable' grafo estadoAtual) estadosAceitos) && (fazPrograma (tail comandos) grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos todosEstados)
+              else if (isSubsequenceOf "*" comando)
+                then (fazPrograma comandos grafo (quantDescida-1) (reachable grafo estadoAtual) arestas estadosAceitos todosEstados) || (fazPrograma (tail comandos) grafo (quantDescida) estados arestas estadosAceitos todosEstados)
+                else False
 
 dividePrograma :: String -> [String]
 dividePrograma pdl=
@@ -211,15 +213,17 @@ dividePrograma pdl=
     else if ult=='?'
       then
         (dividePrograma (init( init( init (init pdl))))) ++ ["?"]
-      else if terc=='*'
-        then ["*",[prim],[seg]] ++ (dividePrograma (tail( tail( tail( tail( tail pdl))))))
-        else if terc=='?'
-          then ["?",[seg],[prim]] ++ (dividePrograma (tail( tail( tail( tail( tail pdl))))))
-          else if prim=='['
-            then ["["] ++ (dividePrograma (tail( tail (tail ( tail pdl)))))
-            else if prim=='<'
-              then ["<"] ++ (dividePrograma (tail( tail (tail ( tail pdl)))))
-              else ["<"] ++ (dividePrograma (tail (tail (tail ( tail pdl)))))
+      else if prim=='!'
+        then ["!"] ++ (dividePrograma ( tail pdl))
+        else if terc=='*'
+          then ["*",[prim],[seg]] ++ (dividePrograma (tail( tail( tail( tail( tail pdl))))))
+          else if terc=='?'
+            then ["?",[seg],[prim]] ++ (dividePrograma (tail( tail( tail( tail( tail pdl))))))
+            else if prim=='['
+              then ["["] ++ (dividePrograma (tail( tail (tail ( tail pdl)))))
+              else if prim=='<'
+                then ["<"] ++ (dividePrograma (tail( tail (tail ( tail pdl)))))
+                else ["<"] ++ (dividePrograma (tail (tail (tail ( tail pdl)))))
 
 achaVar :: String -> Int
 achaVar pdl =
@@ -264,22 +268,36 @@ verificaPDLcomEntrada grafo pdl posVals =
   let
     posDiv = achaDivisao pdl 0
     conector = pdl !! posDiv
+    inicio = head(pdl)
     final = length pdl
     in if posDiv==0 || posDiv == final
       then
-        fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
+        if inicio=='!'
+          then not(fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals)
+          else fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals
       else let
         parte1 = take (posDiv-2) (drop 1 pdl)
         parte2 = drop (posDiv+2) (take 1 pdl)
-        in if conector=='&'
-          then ((verificaPDLcomEntrada grafo parte1 posVals) && (verificaPDLcomEntrada grafo parte2 posVals))
-          else if conector=='|'
-            then ((verificaPDLcomEntrada grafo parte1 posVals) || (verificaPDLcomEntrada grafo parte2 posVals))
-            else if conector=='¬'
-              then ((not(verificaPDLcomEntrada grafo parte1 posVals)) || (verificaPDLcomEntrada grafo parte2 posVals))
-              else if conector=='-'
-                then (((verificaPDLcomEntrada grafo parte1 posVals) && (verificaPDLcomEntrada grafo parte2 posVals)) || ((not(verificaPDLcomEntrada grafo parte1 posVals)) && (not(verificaPDLcomEntrada grafo parte2 posVals))) )
-                else False
+        in if inicio=='!'
+          then if conector=='&'
+            then not ((verificaPDLcomEntrada grafo parte1 posVals) && (verificaPDLcomEntrada grafo parte2 posVals))
+            else if conector=='|'
+              then not ((verificaPDLcomEntrada grafo parte1 posVals) || (verificaPDLcomEntrada grafo parte2 posVals))
+              else if conector=='¬'
+                then not ((not(verificaPDLcomEntrada grafo parte1 posVals)) || (verificaPDLcomEntrada grafo parte2 posVals))
+                else if conector=='-'
+                  then not (((verificaPDLcomEntrada grafo parte1 posVals) && (verificaPDLcomEntrada grafo parte2 posVals)) || ((not(verificaPDLcomEntrada grafo parte1 posVals)) && (not(verificaPDLcomEntrada grafo parte2 posVals))) )
+                  else False
+          else
+            if conector=='&'
+              then ((verificaPDLcomEntrada grafo parte1 posVals) && (verificaPDLcomEntrada grafo parte2 posVals))
+              else if conector=='|'
+                then ((verificaPDLcomEntrada grafo parte1 posVals) || (verificaPDLcomEntrada grafo parte2 posVals))
+                else if conector=='¬'
+                  then ((not(verificaPDLcomEntrada grafo parte1 posVals)) || (verificaPDLcomEntrada grafo parte2 posVals))
+                  else if conector=='-'
+                    then (((verificaPDLcomEntrada grafo parte1 posVals) && (verificaPDLcomEntrada grafo parte2 posVals)) || ((not(verificaPDLcomEntrada grafo parte1 posVals)) && (not(verificaPDLcomEntrada grafo parte2 posVals))) )
+                    else False
 
 
 geraConcatDeInts :: [String] ->[[Int]]
