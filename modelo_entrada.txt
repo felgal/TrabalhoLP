@@ -24,5 +24,8 @@ Terceira linha : PDL
 	[]	Possibilidade
 	*	Iteração
 
+	Programa: '9'
+	Proposições: qualquer letra de 'a' a 'z'
+
 	NOTA: Faz-se o uso de parênteses, para que o programa entenda qual operador executar primeiro.
 		exemplo: !((<9>[p?]q)&(<9>p))¬([9]p)
