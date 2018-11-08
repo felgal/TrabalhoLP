@@ -253,11 +253,12 @@ verificaPDLcomEntrada :: Graph -> String ->[[Int]] -> Bool
 verificaPDLcomEntrada grafo pdl posVals =
   let
     posDiv = achaDivisao pdl 0
-    in if posDiv==0
+    conector = pdl !! posDiv
+    final = length pdl
+    in if posDiv==0 || posDiv == final
       then
         fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl))
       else let
-        conector = pdl !! posDiv
         parte1 = take (posDiv-2) (drop 1 pdl)
         parte2 = drop (posDiv+2) (take 1 pdl)
         in if conector=='&'
