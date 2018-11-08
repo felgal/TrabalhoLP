@@ -304,25 +304,16 @@ encontraErro :: Graph -> String ->[[Int]] -> String
 encontraErro grafo pdl posVals =
   let
     posDiv = achaDivisao pdl 0
-    conector = pdl !! posDiv
     inicio = head(pdl)
     final = (length pdl)-1
-    in if posDiv==0
-      then if not (fazPrograma (dividePrograma pdl) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals)
+    in if posDiv==0 || final == posDiv
+      then if not (verificaPDLcomEntrada grafo pdl posVals)
         then pdl
         else []
-      else if posDiv == final
-        then if inicio=='!'
-          then if (fazPrograma (dividePrograma (take 1(drop 1 pdl))) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals)
-            then pdl
-            else []
-          else if (not (fazPrograma (dividePrograma (take 1(drop 1 pdl))) grafo (length posVals) (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl)) posVals))
-            then pdl
-            else []
-        else let
-          parte1 = take (posDiv-2) (drop 1 pdl)
-          parte2 = drop (posDiv+2) (take 1 pdl)
-          in ((encontraErro grafo parte1 posVals) ++ (encontraErro grafo parte2 posVals))
+      else let
+        parte1 = take (posDiv-2) (drop 1 pdl)
+        parte2 = drop (posDiv+2) (take 1 pdl)
+        in ((encontraErro grafo parte1 posVals) ++ (encontraErro grafo parte2 posVals))
 
 
 
