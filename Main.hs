@@ -69,6 +69,7 @@ uniao grafo1 grafo2 =
     in  buildG vert arestas
 
 achaDivisao :: String -> Int -> Int
+achaDivisao [] _ = 0
 achaDivisao pdl quantEnt =
   let
     topoString = let
@@ -91,6 +92,7 @@ achaDivisao pdl quantEnt =
             ((achaDivisao (tail pdl) (quantEnt) ) + 1)
 
 substituiCharInPDL :: String->Char->Int->String
+substituiCharInPDL [] _ _ = []
 substituiCharInPDL pdl cTroca valTroca =
   let
     valTrocaChar = show valTroca
@@ -108,6 +110,7 @@ substituiCharInPDL pdl cTroca valTroca =
         else ([c]++ (substituiCharInPDL (tail pdl) cTroca valTroca))
 
 substituiPDL :: String->Int->Int->String
+substituiPDL [] _ _ = []
 substituiPDL pdl quantAtual quantTotal =
   let
     c = let
@@ -123,6 +126,7 @@ substituiPDL pdl quantAtual quantTotal =
         else ([c]++(substituiPDL (tail pdl) quantAtual quantTotal))
 
 verificaEstado :: Int -> [Int] -> Bool
+verificaEstado _ [] = False
 verificaEstado estado aceitos=
   let
     estAtual = head(aceitos)
@@ -203,6 +207,7 @@ achaVar pdl =
       else achaVar (tail pdl)
 
 retornaPosVal :: [[Int]] -> Int -> [Int]
+retornaPosVal [] _ = []
 retornaPosVal vals pos=
   let
     val = head vals
