@@ -135,6 +135,20 @@ verificaEstado estado aceitos=
     then True
     else False || verificaEstado estado (tail aceitos)
 
+possui :: Int -> [Int] ->Bool
+possui x l
+         |x`elem` l =True
+         |otherwise=False
+
+verificaColchetes :: Graph -> [Int] -> [Int] -> Bool
+verificaColchetes _ _ [] = True
+verificaColchetes _ [] _ = True
+verificaColchetes grafo vizinhos aceitos =
+  let
+    v = head(vizinhos)
+  in if (possui v aceitos)
+    then (True && (verificaColchetes grafo (tail vizinhos) aceitos))
+    else False
 
 fazPrograma :: [String] ->Graph ->[Int] ->[Int] ->[Int] -> Bool
 fazPrograma comandos grafo estados arestas estadosAceitos=
@@ -157,7 +171,9 @@ fazPrograma comandos grafo estados arestas estadosAceitos=
       then False
       else if (isSubsequenceOf "<" comando)
         then (((verificaEstado estadoAtual estadosAceitos) && (verificaEstado estadoAtual arestas) && (fazPrograma (tail comandos) grafo (reachable grafo estadoAtual) arestas estadosAceitos))  || (fazPrograma comandos grafo (tail estados) arestas estadosAceitos))
-        else False
+        else if (isSubsequenceOf "[" comando)
+          then (verificaColchetes grafo (reachable' grafo estadoAtual) estadosAceitos) && (fazPrograma (tail comandos) grafo (reachable grafo estadoAtual) arestas estadosAceitos)
+          else False
 
 dividePrograma :: String -> [String]
 dividePrograma pdl=
@@ -323,4 +339,9 @@ main = do
   --Entra com o pdl no formato ((q)&(p))-(p)
   print $ fazPrograma ["<"] graph (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl))
   print $ fazPrograma ["<"] graph (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl)))
+  print $ fazPrograma ["["] graph (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl))
+  print $ fazPrograma ["["] graph (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl)))
+  print $ (reachable' graph 0)
+  print $ possui 1 (retornaPosVal varsSemi (achaVar novoPdl))
+  print $ (verificaColchetes graph (reachable' graph 0) (retornaPosVal varsSemi (achaVar novoPdl)))
   print $ verificaPDLcomEntrada graph entPdl varsSemi
