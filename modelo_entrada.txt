@@ -1,0 +1,28 @@
+Primeira linha : Grafo
+
+	<grafo> ::= <no> | <no>;<grafo>
+	<no> ::= <no_id>/<conexões> | <no_id>/
+	<conexões> ::= <no_id> | <no_id>,<conexões>
+	<no_id> ::= número inteiro positivo
+
+
+Segunda linha : Verdades
+
+	<verdades> ::= <verdade> | <verdade>;<verdades>
+	<verdade> ::= <no_id> | <no_id>,<verdade>
+
+
+Terceira linha : PDL
+
+	& 	Conjunção
+	|	Disjunção
+	!	Negação
+	¬	Se então
+	-	Se e somente se
+	?	Teste
+	<>	Necessidade
+	[]	Possibilidade
+	*	Iteração
+
+	NOTA: Faz-se o uso de parênteses, para que o programa entenda qual operador executar primeiro.
+		exemplo: !((<9>[p?]q)&(<9>p))¬([9]p)

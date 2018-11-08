@@ -1,0 +1,37 @@
+Esse é um roteiro para que o usuário consiga rodar o programa Main.hs
+
+################
+1. Instalação
+################
+
+O arquivo  foi inscrito em linguagem haskell, e utilizamos o Glasgow Haskell Compiler para executá-lo.
+
+Windows:	https://www.haskell.org/platform/windows.html
+Linux:		https://www.haskell.org/platform/linux.html
+Mac:		https://www.haskell.org/platform/mac.html
+
+
+################
+2. Compilação
+################
+
+Execute o seguinte comando no terminal
+
+Windows:	ghc --make Main.hs -o main
+Linux:		ghc --make Main.hs -o main.exe
+
+
+################
+3. Execução
+################
+
+Agora, é só executar normalmente na linha de comando, como qualquer outro arquivo executável
+
+Windows:	main.exe
+Linux:		./main
+
+Para a entrada do programa, siga o modelo encontrado no arquivo modelo_entrada.txt,
+ou utilize algum dos exemplos fornecidos.
+
+A entradase dá pela entrada padrão, ou seja, pode ser diretamente na linha de comando,
+ou via direcionamento de entrada no linux, ou algum outro método que preferir.
