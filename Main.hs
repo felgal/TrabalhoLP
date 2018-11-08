@@ -5,6 +5,7 @@ import           Data.Bool
 import           Data.Char
 import           Data.Foldable
 import           Data.Graph
+import           Data.List
 import           Data.List.Split
 import           Debug.Trace
 
@@ -134,8 +135,9 @@ verificaEstado estado aceitos=
     then True
     else False || verificaEstado estado (tail aceitos)
 
-fazPrograma :: [String] ->Graph ->[Int] ->[Int] -> Bool
-fazPrograma comandos grafo estados estadosAceitos=
+
+fazPrograma :: [String] ->Graph ->[Int] ->[Int] ->[Int] -> Bool
+fazPrograma comandos grafo estados arestas estadosAceitos=
   let
     estadoAtual = let
       in if (length estados)>0
@@ -149,12 +151,12 @@ fazPrograma comandos grafo estados estadosAceitos=
           (head comandos)
         else
           "0"
-  in if comando=="0"
-    then verificaEstado estadoAtual estadosAceitos
+  in if comando=="0" || comandos==[]
+    then True
     else if estadoAtual==(-1)
       then False
-      else if comando=="<"
-        then (fazPrograma (tail comandos) grafo (reachable grafo estadoAtual) estadosAceitos)  || (fazPrograma comandos grafo (tail estados) estadosAceitos)
+      else if (isSubsequenceOf "<" comando)
+        then (((verificaEstado estadoAtual estadosAceitos) && (verificaEstado estadoAtual arestas) && (fazPrograma (tail comandos) grafo (reachable grafo estadoAtual) arestas estadosAceitos))  || (fazPrograma comandos grafo (tail estados) arestas estadosAceitos))
         else False
 
 dividePrograma :: String -> [String]
@@ -203,7 +205,7 @@ achaVar pdl =
   in if  (cAtual =='0') || (cAtual =='1') ||  (cAtual =='2') ||  (cAtual =='3') ||  cAtual =='4' ||  cAtual =='5' ||  cAtual =='6' ||  cAtual =='7' ||  cAtual =='8'
     then (digitToInt cAtual)
     else if cAtual=='/'
-      then 3
+      then (-1)
       else achaVar (tail pdl)
 
 retornaPosVal :: [[Int]] -> Int -> [Int]
@@ -213,9 +215,21 @@ retornaPosVal vals pos=
     val = head vals
   in if pos==0
     then val
-    else retornaPosVal vals (pos-1)
+    else retornaPosVal (tail vals) (pos-1)
 
 
+alcancavelVertices :: Graph ->[Vertex] -> [Vertex]
+alcancavelVertices grafo vertices =
+  let
+    vert = let
+      in if (length vertices)>0
+        then
+          head vertices
+        else
+          (-1)
+  in if vert==(-1)
+    then [0]
+    else (tail(reachable grafo vert) ++ (alcancavelVertices grafo (tail vertices)))
 
 verificaPDLcomEntrada :: Graph -> String ->[[Int]] -> Bool
 verificaPDLcomEntrada grafo pdl posVals =
@@ -223,7 +237,7 @@ verificaPDLcomEntrada grafo pdl posVals =
     posDiv = achaDivisao pdl 0
     in if posDiv==0
       then
-        fazPrograma (dividePrograma pdl) grafo (vertices grafo) (retornaPosVal posVals (achaVar pdl))
+        fazPrograma (dividePrograma pdl) grafo (vertices grafo) (alcancavelVertices grafo (vertices grafo)) (retornaPosVal posVals (achaVar pdl))
       else let
         conector = pdl !! posDiv
         parte1 = take (posDiv-2) (drop 1 pdl)
@@ -235,7 +249,7 @@ verificaPDLcomEntrada grafo pdl posVals =
             else if conector=='%'
               then ((not(verificaPDLcomEntrada grafo parte1 posVals)) || (verificaPDLcomEntrada grafo parte2 posVals))
               else if conector=='-'
-                then ((verificaPDLcomEntrada grafo parte1 posVals) && (verificaPDLcomEntrada grafo parte2 posVals) || (not(verificaPDLcomEntrada grafo parte1 posVals)) && (not(verificaPDLcomEntrada grafo parte2 posVals)) )
+                then (((verificaPDLcomEntrada grafo parte1 posVals) && (verificaPDLcomEntrada grafo parte2 posVals)) || ((not(verificaPDLcomEntrada grafo parte1 posVals)) && (not(verificaPDLcomEntrada grafo parte2 posVals))) )
                 else False
 
 
@@ -297,5 +311,16 @@ main = do
 
   print $ take (15-2) (drop 1 novoPdl)
 
+
+  print $ vertices graph
+  print $ reachable graph 0
+  print $ (alcancavelVertices graph (vertices graph))
+  print $ (verificaEstado 0 (alcancavelVertices graph (vertices graph)))
+  print $ (verificaEstado 1 (alcancavelVertices graph (vertices graph)))
+  print $ (verificaEstado 2 (alcancavelVertices graph (vertices graph)))
+  print $ (retornaPosVal varsSemi (achaVar (drop 5(novoPdl))))
+  print $ (retornaPosVal varsSemi (achaVar novoPdl))
   --Entra com o pdl no formato ((q)&(p))-(p)
+  print $ fazPrograma ["<"] graph (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl))
+  print $ fazPrograma ["<"] graph (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl)))
   print $ verificaPDLcomEntrada graph entPdl varsSemi
