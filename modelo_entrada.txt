@@ -7,10 +7,10 @@ Primeira linha : Grafo
 
 
 Segunda linha : Verdades
-
+mod
 	<verdades> ::= <verdade> | <verdade>;<verdades>
-	<verdade> ::= <no_id> | <no_id>,<verdade>
-
+	<verdade> ::= <no_id_mod> | <no_id_mod>,<verdade>
+	<no_id_mod> ::= <no_id> - 1
 
 Terceira linha : PDL
 
