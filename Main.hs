@@ -360,7 +360,7 @@ main = do
 
   nos <- return $ snd nosSemi
   let (graph, vertexMap) = graphFromEdges' nos
-  print $ edges graph
+  --print $ edges graph
 
   --entra com a quantidade de variaveis
   --entVar<- getLine
@@ -370,7 +370,7 @@ main = do
   entVars<- getLine
   tuplasVars <- return $ splitOn ";" entVars
   varsSemi <- return $ geraConcatDeInts tuplasVars
-  print varsSemi
+  --print varsSemi
 
 
 
@@ -378,28 +378,28 @@ main = do
 
   --realiza a substituição de caracteres
   novoPdl <- return $ substituiPDL entPdl (length tuplasVars) (length tuplasVars)
-  print $ novoPdl
+  --print $ novoPdl
 
-  print $ take (14-2) (drop 1 novoPdl)
+  --print $ take (14-2) (drop 1 novoPdl)
 
 
-  print $ vertices graph
-  print $ reachable graph 0
-  print $ (alcancavelVertices graph (vertices graph))
-  print $ (verificaEstado 0 (alcancavelVertices graph (vertices graph)))
-  print $ (verificaEstado 1 (alcancavelVertices graph (vertices graph)))
-  print $ (verificaEstado 2 (alcancavelVertices graph (vertices graph)))
-  print $ (retornaPosVal varsSemi (achaVar (drop 5(novoPdl))))
-  print $ (retornaPosVal varsSemi (achaVar novoPdl))
+  --print $ vertices graph
+  --print $ reachable graph 0
+  --print $ (alcancavelVertices graph (vertices graph))
+  --print $ (verificaEstado 0 (alcancavelVertices graph (vertices graph)))
+  --print $ (verificaEstado 1 (alcancavelVertices graph (vertices graph)))
+  --print $ (verificaEstado 2 (alcancavelVertices graph (vertices graph)))
+  --print $ (retornaPosVal varsSemi (achaVar (drop 5(novoPdl))))
+  --print $ (retornaPosVal varsSemi (achaVar novoPdl))
   --Entra com o pdl no formato ((q)&(p))-(p)
-  print $ fazPrograma ["<"] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl)) varsSemi
-  print $ fazPrograma ["<"] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
-  print $ fazPrograma ["["] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl)) varsSemi
-  print $ fazPrograma ["["] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
-  print $ (reachable' graph 0)
-  print $ possui 1 (retornaPosVal varsSemi (achaVar novoPdl))
-  print $ (verificaColchetes graph (reachable' graph 0) (retornaPosVal varsSemi (achaVar novoPdl)))
-  print $ fazPrograma ["?","0"] graph (length (vertices graph)) [2] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (novoPdl))) varsSemi
-  print $ fazPrograma ["*","<"] graph (length (vertices graph)) [1] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
+  --print $ fazPrograma ["<"] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl)) varsSemi
+  --print $ fazPrograma ["<"] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
+  --print $ fazPrograma ["["] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar novoPdl)) varsSemi
+  --print $ fazPrograma ["["] graph (length (vertices graph)) (vertices graph) (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
+  --print $ (reachable' graph 0)
+  --print $ possui 1 (retornaPosVal varsSemi (achaVar novoPdl))
+  --print $ (verificaColchetes graph (reachable' graph 0) (retornaPosVal varsSemi (achaVar novoPdl)))
+  --print $ fazPrograma ["?","0"] graph (length (vertices graph)) [2] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (novoPdl))) varsSemi
+  --print $ fazPrograma ["*","<"] graph (length (vertices graph)) [1] (alcancavelVertices graph (vertices graph)) (retornaPosVal varsSemi (achaVar (drop 7 novoPdl))) varsSemi
   print $ verificaPDLcomEntrada graph entPdl varsSemi
-  --print $ encontraErro graph entPdl varsSemi
+  print $ encontraErro graph entPdl varsSemi
